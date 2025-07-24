@@ -1,0 +1,16 @@
+# Video Transcription Tool Requirements
+# These packages are already installed in the virtual environment
+
+openai-whisper>=20250625
+moviepy>=2.2.1
+pandas>=2.3.1
+rich>=14.0.0
+click>=8.2.1
+
+# Additional dependencies (automatically installed with the above packages)
+torch>=2.7.1
+numpy>=2.2.6
+tiktoken>=0.9.0
+numba>=0.61.2
+pillow>=11.3.0
+tqdm>=4.67.1
