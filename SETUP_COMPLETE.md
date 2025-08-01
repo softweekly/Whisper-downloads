@@ -8,11 +8,14 @@ Your video transcription environment has been successfully created and configure
 - **`video_transcriber.py`** - Main command-line transcription tool
 - **`interactive_transcriber.py`** - Easy-to-use interactive interface (RECOMMENDED)
 - **`batch_transcriber.py`** - Process multiple videos at once
+- **`youtube_channel_transcriber.py`** - Download & transcribe YouTube channels (NEW!)
+- **`youtube_gui.py`** - Easy GUI for YouTube transcription (NEW!)
 - **`demo.py`** - Show examples and usage instructions
 
 ### Utilities
 - **`start.bat`** - Windows launcher with menu system
 - **`README.md`** - Complete documentation and instructions
+- **`YOUTUBE_GUIDE.md`** - YouTube channel transcription guide (NEW!)
 - **`requirements.txt`** - List of installed packages
 
 ### Environment
@@ -22,19 +25,27 @@ Your video transcription environment has been successfully created and configure
 ## 🚀 How to Start
 
 ### Option 1: Use the Launcher (Easiest)
-Double-click **`start.bat`** and choose from the menu
+Double-click **`start.bat`** and choose from the menu:
+- Option 1: Interactive Mode (single videos)
+- Option 4: YouTube Channel Transcriber 
+- Option 5: YouTube GUI (easiest for YouTube)
 
 ### Option 2: Interactive Mode (Recommended)
 ```powershell
 .\.venv\Scripts\python.exe interactive_transcriber.py
 ```
 
-### Option 3: Command Line
+### Option 3: YouTube GUI (NEW!)
+```powershell
+.\.venv\Scripts\python.exe youtube_gui.py
+```
+
+### Option 4: Command Line
 ```powershell
 .\.venv\Scripts\python.exe video_transcriber.py "your_video.mp4" --search "keyword"
 ```
 
-### Option 4: See Examples
+### Option 5: See Examples
 ```powershell
 .\.venv\Scripts\python.exe demo.py
 ```
@@ -42,10 +53,12 @@ Double-click **`start.bat`** and choose from the menu
 ## 📋 What It Does
 
 ✅ **Transcribes any video file** using OpenAI Whisper  
+✅ **Downloads from YouTube channels** automatically (NEW!)
 ✅ **Searches for keywords** with precise timestamps  
 ✅ **Highlights context** around found keywords  
 ✅ **Multiple output formats** (TXT, CSV, JSON)  
 ✅ **Batch processing** for multiple videos  
+✅ **Easy GUI interface** for YouTube channels (NEW!)
 ✅ **Beautiful, easy-to-read output**  
 
 ## 🎯 Supported Video Formats
