@@ -94,16 +94,34 @@ def main():
     ))
     
     try:
-        # Get user inputs
-        video_path = get_video_file()
+        # New: Ask for source type
+        source_type = Prompt.ask("\n[cyan]Choose video source:[/cyan]", choices=["local", "youtube"], default="local", show_choices=True)
+        
+        if source_type == "local":
+            video_path = get_video_file()
+            is_youtube = False
+        else:
+            # Get YouTube URL
+            while True:
+                yt_url = Prompt.ask("\n[cyan]Enter YouTube video URL[/cyan]").strip()
+                if yt_url.startswith("http") and "youtube.com" in yt_url:
+                    break
+                console.print("[red]Please enter a valid YouTube URL[/red]")
+            is_youtube = True
+            video_path = yt_url
+        
         model_size = get_model_choice()
         output_format = get_output_format()
         keywords = get_keywords()
         
         # Ask about output directory
         output_dir = None
-        if Confirm.ask(f"\n[cyan]Save output to same folder as video ({video_path.parent})?[/cyan]", default=True):
-            output_dir = video_path.parent
+        if not is_youtube:
+            default_dir = video_path.parent
+        else:
+            default_dir = Path.cwd()
+        if Confirm.ask(f"\n[cyan]Save output to folder ({default_dir})?[/cyan]", default=True):
+            output_dir = default_dir
         else:
             output_dir_str = Prompt.ask("Enter output directory path")
             output_dir = Path(output_dir_str.strip('"').strip("'"))
@@ -111,7 +129,10 @@ def main():
         
         # Initialize and run transcriber
         console.print(f"\n[yellow]Starting transcription...[/yellow]")
-        console.print(f"Video: {video_path.name}")
+        if is_youtube:
+            console.print(f"YouTube URL: {video_path}")
+        else:
+            console.print(f"Video: {video_path.name}")
         console.print(f"Model: {model_size}")
         console.print(f"Format: {output_format}")
         if keywords:
@@ -120,14 +141,18 @@ def main():
         transcriber = VideoTranscriber(model_size=model_size)
         
         # Transcribe
-        transcript_data = transcriber.transcribe_video(str(video_path), str(output_dir))
+        if is_youtube:
+            transcript_data = transcriber.transcribe_youtube(video_path, str(output_dir))
+            transcript_file = output_dir / "youtube_transcript." + output_format
+        else:
+            transcript_data = transcriber.transcribe_video(str(video_path), str(output_dir))
+            transcript_file = output_dir / f"{video_path.stem}_transcript.{output_format}"
         
         if not transcript_data:
             console.print("[red]Transcription failed![/red]")
             return
         
         # Save transcript
-        transcript_file = output_dir / f"{video_path.stem}_transcript.{output_format}"
         transcriber.save_transcript(transcript_data, transcript_file, output_format)
         
         # Search for keywords
@@ -139,7 +164,7 @@ def main():
             
             # Save search results
             if matches and Confirm.ask("\n[cyan]Save search results to file?[/cyan]"):
-                search_file = output_dir / f"{video_path.stem}_search_results.json"
+                search_file = output_dir / ("youtube_search_results.json" if is_youtube else f"{video_path.stem}_search_results.json")
                 search_data = {
                     'video_file': str(video_path),
                     'keywords': keywords,
