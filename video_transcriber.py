@@ -45,7 +45,7 @@ class VideoTranscriber:
         try:
             video = VideoFileClip(video_path)
             audio = video.audio
-            audio.write_audiofile(audio_path, verbose=False, logger=None)
+            audio.write_audiofile(audio_path, logger=None)
             audio.close()
             video.close()
             console.print(f"[green]✓ Audio extracted to {audio_path}[/green]")
@@ -82,8 +82,7 @@ class VideoTranscriber:
             # Transcribe with timestamps
             result = self.model.transcribe(
                 str(temp_audio),
-                word_timestamps=True,
-                verbose=False
+                word_timestamps=True
             )
             
             # Clean up temporary audio file

@@ -193,7 +193,7 @@ class TranscriptionTester:
             clip = ColorClip(size=(640, 480), color=(0, 128, 255), duration=duration)
             
             test_video_path = self.temp_dir / "test_video.mp4"
-            clip.write_videofile(str(test_video_path), fps=24, verbose=False, logger=None)
+            clip.write_videofile(str(test_video_path), fps=24, logger=None)
             clip.close()
             
             console.print(f"[green]✓ Created test video: {test_video_path}[/green]")

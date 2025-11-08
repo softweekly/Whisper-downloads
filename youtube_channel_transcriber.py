@@ -47,12 +47,16 @@ class YouTubeChannelTranscriber:
         return base_dir
     
     def get_channel_info(self, channel_url):
-        """Get information about a YouTube channel"""
+        """Get information about a YouTube channel with detailed video info"""
         try:
             ydl_opts = {
                 'quiet': True,
                 'no_warnings': True,
-                'extract_flat': True,
+                'extract_flat': False,  # Get full info for each video
+                'playlistend': 50,  # Limit to recent 50 videos for performance
+                'ignoreerrors': True,  # Skip videos that can't be accessed
+                'writeinfojson': False,
+                'writesubtitles': False,
             }
             
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -70,10 +74,13 @@ class YouTubeChannelTranscriber:
             console.print(f"[red]Error getting channel info: {e}[/red]")
             return None
     
-    def filter_videos(self, entries, max_videos=None, days_back=None, duration_limit=None):
-        """Filter videos based on user criteria"""
+    def filter_videos(self, entries, max_videos=None, days_back=None, duration_limit=None, live_only=True):
+        """Filter videos based on user criteria - prioritizing live videos from most recent"""
         filtered = []
+        live_videos = []
+        regular_videos = []
         
+        # First pass: separate live videos from regular videos
         for entry in entries:
             # Skip if no video ID
             if not entry.get('id'):
@@ -84,14 +91,29 @@ class YouTubeChannelTranscriber:
                 if entry['duration'] > duration_limit * 60:  # Convert minutes to seconds
                     continue
             
-            # Date filter (if specified) - simplified for now
-            # Could be enhanced with actual date parsing
+            # Check if it's a live video (was_live indicates it was a livestream)
+            is_live = entry.get('was_live', False) or entry.get('is_live', False)
             
-            filtered.append(entry)
-            
-            # Limit number of videos
-            if max_videos and len(filtered) >= max_videos:
-                break
+            if is_live:
+                live_videos.append(entry)
+            else:
+                regular_videos.append(entry)
+        
+        # Sort live videos by upload date (most recent first)
+        live_videos.sort(key=lambda x: x.get('upload_date', ''), reverse=True)
+        
+        # If live_only is True, only return live videos
+        if live_only:
+            filtered = live_videos
+        else:
+            # Sort regular videos by upload date too
+            regular_videos.sort(key=lambda x: x.get('upload_date', ''), reverse=True)
+            # Prioritize live videos, then add regular videos
+            filtered = live_videos + regular_videos
+        
+        # Limit number of videos
+        if max_videos:
+            filtered = filtered[:max_videos]
         
         return filtered
     
@@ -247,6 +269,12 @@ def main():
         # Get filtering options
         console.print("\n[cyan]Video Selection Options[/cyan]")
         
+        # Ask about live videos preference
+        live_only = Confirm.ask(
+            "Process only live videos/streams? (Recommended for live content)", 
+            default=True
+        )
+        
         max_videos = IntPrompt.ask(
             "Maximum number of videos to process", 
             default=5, 
@@ -255,7 +283,7 @@ def main():
         
         duration_limit = IntPrompt.ask(
             "Maximum video duration (minutes, 0 for no limit)", 
-            default=30, 
+            default=60, 
             show_default=True
         )
         duration_limit = duration_limit if duration_limit > 0 else None
@@ -292,14 +320,23 @@ def main():
         filtered_videos = transcriber.filter_videos(
             channel_info['entries'], 
             max_videos=max_videos,
-            duration_limit=duration_limit
+            duration_limit=duration_limit,
+            live_only=live_only
         )
         
         if not filtered_videos:
             console.print("[red]No videos match your criteria.[/red]")
+            if live_only:
+                console.print("[yellow]Tip: Try disabling 'live only' filter if no live videos found[/yellow]")
             return
         
+        # Show video type breakdown
+        live_count = sum(1 for v in filtered_videos if v.get('was_live', False) or v.get('is_live', False))
         console.print(f"[green]Selected {len(filtered_videos)} videos to process[/green]")
+        if live_only:
+            console.print(f"[blue]All {live_count} are live/stream videos (sorted by most recent first)[/blue]")
+        else:
+            console.print(f"[blue]{live_count} live videos, {len(filtered_videos) - live_count} regular videos (live videos prioritized)[/blue]")
         
         if not Confirm.ask("Start downloading and transcribing?"):
             return
@@ -316,8 +353,18 @@ def main():
                 progress.update(task, description=f"[cyan]Processing: {video_entry.get('title', 'Unknown')}")
                 
                 try:
+                    # Show video info
+                    title = video_entry.get('title', 'Unknown')
+                    upload_date = video_entry.get('upload_date', '')
+                    is_live = video_entry.get('was_live', False) or video_entry.get('is_live', False)
+                    live_indicator = " [LIVE]" if is_live else ""
+                    
+                    console.print(f"\n[yellow]Downloading: {title}{live_indicator}[/yellow]")
+                    if upload_date:
+                        formatted_date = f"{upload_date[:4]}-{upload_date[4:6]}-{upload_date[6:8]}"
+                        console.print(f"[dim]Upload date: {formatted_date}[/dim]")
+                    
                     # Download video
-                    console.print(f"\n[yellow]Downloading: {video_entry.get('title', 'Unknown')}[/yellow]")
                     video_info = transcriber.download_video(video_url, video_dir)
                     
                     if video_info:
