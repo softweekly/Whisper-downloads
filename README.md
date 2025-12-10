@@ -1,8 +1,26 @@
 # Video Transcription Tool with Keyword Search
 
-A powerful Python tool that uses OpenAI Whisper to transcribe videos and search for keywords with timestamps. Perfect for analyzing meeting recordings, lectures, interviews, and any video content.
+A powerful, easy-to-use tool that transcribes videos and searches for keywords with timestamps using OpenAI Whisper.
 
-## Features
+## 🚀 **SUPER QUICK START**
+
+### Windows Users:
+1. Put your video in the `videos_to_transcribe` folder
+2. Double-click `transcribe.bat`
+3. Follow the prompts!
+
+### Linux/Mac Users:
+1. Put your video in the `videos_to_transcribe` folder  
+2. Run `./transcribe.sh`
+3. Follow the prompts!
+
+## 📚 **Documentation**
+
+- **🎯 QUICK_START.txt** - One-page cheat sheet (read this first!)
+- **📖 USER_GUIDE.md** - Complete fool-proof guide with troubleshooting
+- **📋 This README** - Technical details for developers
+
+## ✨ Features
 
 - 🎥 **Video Transcription**: Convert any video to text using OpenAI Whisper
 - 🔍 **Keyword Search**: Find specific words/phrases with timestamps
@@ -10,17 +28,46 @@ A powerful Python tool that uses OpenAI Whisper to transcribe videos and search 
 - 📝 **Multiple Formats**: Export as TXT, CSV, or JSON
 - 🎯 **Context Highlighting**: See keywords highlighted in context
 - 🚀 **Batch Processing**: Process multiple videos at once
-- 💻 **Interactive Interface**: Easy-to-use command-line interface
+- 📺 **YouTube Support**: Download and transcribe YouTube videos
+- 🎬 **Live Stream Priority**: Filter for live videos from channels
+- 💻 **Interactive Interface**: Easy-to-use for beginners
+- ⚡ **Command Line**: Powerful options for advanced users
 
-## Installation
+## 📦 Installation
 
-1. **Clone or download this repository**
-2. **Navigate to the project directory**
-3. **The virtual environment is already set up!**
+### Already Set Up?
+Skip to "Usage" below!
 
-## Usage
+### First Time Setup:
 
-### Method 1: Interactive Mode (Recommended for beginners)
+**Windows:**
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+**Linux/Mac:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+chmod +x *.sh
+```
+
+## 🎮 Usage
+
+### Super Simple Way (Recommended):
+
+**Windows:** Double-click `transcribe.bat`  
+**Linux/Mac:** Run `./transcribe.sh`
+
+### Full Menu with All Options:
+
+**Windows:** Double-click `start.bat`  
+**Linux/Mac:** Run `./start.sh`
+
+### Method 1: Interactive Mode (Beginner-Friendly)
 
 ```bash
 .\.venv\Scripts\python.exe interactive_transcriber.py

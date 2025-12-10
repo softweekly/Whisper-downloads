@@ -6,6 +6,10 @@ Uses OpenAI Whisper for transcription and provides keyword search with timestamp
 
 import os
 import sys
+
+# Set environment variable for MoviePy before importing
+os.environ['IMAGEIO_FFMPEG_EXE'] = 'auto'
+
 import click
 import whisper
 import pandas as pd
@@ -97,6 +101,64 @@ class VideoTranscriber:
             # Clean up temporary audio file
             if temp_audio.exists():
                 temp_audio.unlink()
+            return None
+    
+    def transcribe_youtube(self, youtube_url, output_dir=None):
+        """Download and transcribe a YouTube video"""
+        import yt_dlp
+        
+        console.print(f"[yellow]Downloading YouTube video...[/yellow]")
+        
+        # Set output directory
+        if output_dir is None:
+            output_dir = Path.cwd()
+        else:
+            output_dir = Path(output_dir)
+        
+        output_dir.mkdir(exist_ok=True)
+        
+        try:
+            # Configure yt-dlp options
+            ydl_opts = {
+                'format': 'best[height<=720]',
+                'outtmpl': str(output_dir / '%(title)s.%(ext)s'),
+                'quiet': True,
+                'no_warnings': True,
+            }
+            
+            # Check for cookies file for member-only/private content
+            cookies_file = Path(__file__).parent / "cookies.txt"
+            if cookies_file.exists():
+                ydl_opts['cookiefile'] = str(cookies_file)
+                console.print("[green]✓ Using cookies.txt for authentication[/green]")
+            
+            # Download video
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(youtube_url, download=True)
+                video_title = info.get('title', 'video')
+                
+            console.print(f"[green]✓ Video downloaded: {video_title}[/green]")
+            
+            # Find the downloaded video file
+            video_files = list(output_dir.glob(f"{video_title}.*"))
+            if not video_files:
+                # Try with cleaned title
+                import re
+                clean_title = re.sub(r'[<>:"/\\|?*]', '_', video_title)
+                video_files = list(output_dir.glob(f"{clean_title}.*"))
+            
+            if not video_files:
+                console.print("[red]✗ Could not find downloaded video file[/red]")
+                return None
+            
+            video_path = video_files[0]
+            console.print(f"[yellow]Processing: {video_path.name}[/yellow]")
+            
+            # Transcribe the downloaded video
+            return self.transcribe_video(str(video_path), str(output_dir))
+            
+        except Exception as e:
+            console.print(f"[red]✗ Error downloading/transcribing YouTube video: {e}[/red]")
             return None
     
     def format_timestamp(self, seconds):

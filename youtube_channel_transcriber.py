@@ -59,6 +59,12 @@ class YouTubeChannelTranscriber:
                 'writesubtitles': False,
             }
             
+            # Check for cookies file for member-only/private content
+            cookies_file = Path(__file__).parent / "cookies.txt"
+            if cookies_file.exists():
+                ydl_opts['cookiefile'] = str(cookies_file)
+                console.print("[green]✓ Using cookies.txt for authentication[/green]")
+            
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(channel_url, download=False)
                 
@@ -126,6 +132,11 @@ class YouTubeChannelTranscriber:
                 'quiet': True,
                 'no_warnings': True,
             }
+            
+            # Check for cookies file for member-only/private content
+            cookies_file = Path(__file__).parent / "cookies.txt"
+            if cookies_file.exists():
+                ydl_opts['cookiefile'] = str(cookies_file)
             
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(video_url, download=True)

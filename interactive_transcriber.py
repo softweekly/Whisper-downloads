@@ -7,6 +7,10 @@ Easy-to-use interface for video transcription and keyword search
 import os
 import sys
 from pathlib import Path
+
+# Set environment variable for MoviePy before importing
+os.environ['IMAGEIO_FFMPEG_EXE'] = 'auto'
+
 from rich.console import Console
 from rich.prompt import Prompt, Confirm
 from rich.panel import Panel
@@ -20,6 +24,19 @@ console = Console()
 
 def get_video_file():
     """Get video file path from user"""
+    
+    # Check for videos in the dedicated folder
+    video_folder = Path(__file__).parent / "videos_to_transcribe"
+    video_extensions = {'.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv', '.webm', '.m4v'}
+    
+    if video_folder.exists():
+        available_videos = [f for f in video_folder.iterdir() if f.suffix.lower() in video_extensions]
+        if available_videos:
+            console.print(f"\n[green]Found {len(available_videos)} video(s) in videos_to_transcribe folder:[/green]")
+            for i, video in enumerate(available_videos, 1):
+                console.print(f"  {i}. {video.name}")
+            console.print(f"\n[yellow]Tip: You can enter just the filename if it's in the videos_to_transcribe folder[/yellow]")
+    
     while True:
         video_path = Prompt.ask("\n[cyan]Enter the path to your video file[/cyan]")
         
@@ -29,9 +46,18 @@ def get_video_file():
             
         video_path = Path(video_path.strip('"').strip("'"))
         
+        # If it's not an absolute path, check in the videos_to_transcribe folder
+        if not video_path.is_absolute():
+            # Try relative to current directory first
+            if not video_path.exists():
+                # Try in videos_to_transcribe folder
+                alt_path = Path(__file__).parent / "videos_to_transcribe" / video_path.name
+                if alt_path.exists():
+                    console.print(f"[green]Found video in videos_to_transcribe folder![/green]")
+                    video_path = alt_path
+        
         if video_path.exists():
             # Check if it's likely a video file
-            video_extensions = {'.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv', '.webm', '.m4v'}
             if video_path.suffix.lower() in video_extensions:
                 return video_path
             else:

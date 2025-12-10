@@ -1,0 +1,81 @@
+# cookies.txt - Example File for YouTube Authentication
+# 
+# This file is used to access member-only or private YouTube content
+# that you have permission to view.
+#
+# HOW TO CREATE YOUR cookies.txt FILE:
+# 
+# METHOD 1 - Browser Extension (EASIEST):
+# ----------------------------------------
+# 1. Install a cookies export extension:
+#    - Chrome/Edge: Search for "Get cookies.txt LOCALLY" in Chrome Web Store
+#    - Firefox: Search for "cookies.txt" in Firefox Add-ons
+# 
+# 2. Log into YouTube in your browser
+# 
+# 3. Go to youtube.com
+# 
+# 4. Click the extension icon and export cookies
+# 
+# 5. Save the exported file as "cookies.txt" in this folder
+#    (remove .example from the filename)
+#
+#
+# METHOD 2 - Manual Export (ADVANCED):
+# -------------------------------------
+# 1. Open your browser and go to youtube.com (logged in)
+# 
+# 2. Press F12 to open Developer Tools
+# 
+# 3. Go to Application/Storage tab → Cookies → youtube.com
+# 
+# 4. Export all cookies to a text file in Netscape format
+# 
+# 5. Save as "cookies.txt" in this folder
+#
+#
+# WHAT THE FILE SHOULD LOOK LIKE:
+# --------------------------------
+# The cookies.txt file should be in Netscape cookie format:
+#
+# # Netscape HTTP Cookie File
+# .youtube.com	TRUE	/	TRUE	0	CONSENT	YES+cb
+# .youtube.com	TRUE	/	FALSE	1234567890	SID	your_session_id_here
+# ... (more cookie lines)
+#
+#
+# SECURITY WARNINGS:
+# ------------------
+# ⚠️  Keep cookies.txt PRIVATE - it contains your login session
+# ⚠️  Don't share cookies.txt - it's like sharing your password
+# ⚠️  Update periodically - cookies expire after weeks/months
+# ⚠️  Delete when done - remove cookies.txt if no longer needed
+#
+#
+# WHEN YOU NEED THIS FILE:
+# ------------------------
+# - Accessing member-only channel content
+# - Downloading videos from your private playlists
+# - Transcribing content from channels you're subscribed to
+# - Any YouTube content that requires being logged in
+#
+#
+# HOW THE APP USES IT:
+# --------------------
+# - The app automatically detects cookies.txt in this folder
+# - No extra configuration needed
+# - You'll see "✓ Using cookies.txt for authentication" when it's found
+# - Works for both individual videos and channel transcription
+#
+#
+# TROUBLESHOOTING:
+# ----------------
+# If it's not working:
+# - Make sure file is named exactly "cookies.txt" (not cookies.txt.txt)
+# - Re-export fresh cookies while logged into YouTube
+# - Verify you actually have access to the content
+# - Check that cookies haven't expired (re-export if old)
+#
+#
+# Once you have your real cookies.txt file, delete or rename this
+# example file to avoid confusion.

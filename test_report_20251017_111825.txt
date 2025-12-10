@@ -1,6 +1,0 @@
-Video Transcription System Test Report
-Generated: 2025-10-17 11:18:25.985518
-Passed: 36
-Failed: 1
-Warnings: 0
-Success Rate: 97.3%
